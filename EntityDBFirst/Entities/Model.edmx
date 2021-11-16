@@ -31,6 +31,22 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="30" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Library.dbo.MyBooks' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MyBooks">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="Pages" />
+            <PropertyRef Name="AuthorId" />
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Pages" Type="int" Nullable="false" />
+          <Property Name="AuthorId" Type="int" Nullable="false" />
+          <Property Name="CategoryId" Type="int" Nullable="false" />
+        </EntityType>
         <Association Name="FK__Books__AuthorId__3B75D760">
           <End Role="Authors" Type="Self.Authors" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -59,10 +75,22 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="GetBookById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="book_id" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="LibraryModelStoreContainer">
           <EntitySet Name="Authors" EntityType="Self.Authors" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MyBooks" EntityType="Self.MyBooks" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MyBooks].[Id] AS [Id], 
+    [MyBooks].[Name] AS [Name], 
+    [MyBooks].[Pages] AS [Pages], 
+    [MyBooks].[AuthorId] AS [AuthorId], 
+    [MyBooks].[CategoryId] AS [CategoryId]
+    FROM [dbo].[MyBooks] AS [MyBooks]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK__Books__AuthorId__3B75D760" Association="Self.FK__Books__AuthorId__3B75D760">
             <End Role="Authors" EntitySet="Authors" />
             <End Role="Books" EntitySet="Books" />
@@ -107,6 +135,20 @@
           <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Books" Relationship="Self.FK__Books__CategoryI__3C69FB99" FromRole="Categories" ToRole="Books" />
         </EntityType>
+        <EntityType Name="MyBook">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="Name" />
+            <PropertyRef Name="Pages" />
+            <PropertyRef Name="AuthorId" />
+            <PropertyRef Name="CategoryId" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Pages" Type="Int32" Nullable="false" />
+          <Property Name="AuthorId" Type="Int32" Nullable="false" />
+          <Property Name="CategoryId" Type="Int32" Nullable="false" />
+        </EntityType>
         <Association Name="FK__Books__AuthorId__3B75D760">
           <End Role="Authors" Type="Self.Author" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -139,6 +181,7 @@
           <EntitySet Name="Authors" EntityType="Self.Author" />
           <EntitySet Name="Books" EntityType="Self.Book" />
           <EntitySet Name="Categories" EntityType="Self.Category" />
+          <EntitySet Name="MyBooks" EntityType="Self.MyBook" />
           <AssociationSet Name="FK__Books__AuthorId__3B75D760" Association="Self.FK__Books__AuthorId__3B75D760">
             <End Role="Authors" EntitySet="Authors" />
             <End Role="Books" EntitySet="Books" />
@@ -147,7 +190,17 @@
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Books" EntitySet="Books" />
           </AssociationSet>
+          <FunctionImport Name="GetBookById" ReturnType="Collection(LibraryModel.GetBookById_Result)">
+            <Parameter Name="book_id" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
+        <ComplexType Name="GetBookById_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="30" />
+          <Property Type="Int32" Name="Pages" Nullable="false" />
+          <Property Type="Int32" Name="AuthorId" Nullable="false" />
+          <Property Type="Int32" Name="CategoryId" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -183,6 +236,28 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MyBooks">
+            <EntityTypeMapping TypeName="LibraryModel.MyBook">
+              <MappingFragment StoreEntitySet="MyBooks">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Pages" ColumnName="Pages" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetBookById" FunctionName="LibraryModel.Store.GetBookById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="LibraryModel.GetBookById_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Pages" ColumnName="Pages" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

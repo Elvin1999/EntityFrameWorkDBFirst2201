@@ -7,9 +7,42 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
-        <DataGrid  Name="mydatagrid" >
+        <!--<DataGrid   Name="mydatagrid" >
             
-        </DataGrid>
+        </DataGrid>-->
+        <ListView Background="SpringGreen" 
+                      ItemsSource="{Binding AllBooks,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="650" Margin="20"
+                      Height="350"
+                      >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Id" Width="30">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Padding="5,2" Text="{Binding Id}" ></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Name" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Padding="5,2" Text="{Binding Name}" ></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Page Count" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Padding="5,2" Text="{Binding Author.Name}" ></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                 
+                  
+                </GridView>
+            </ListView.View>
+        </ListView>
+
         <Button Click="Button_Click">Delete</Button>
     </StackPanel>
 </Window>

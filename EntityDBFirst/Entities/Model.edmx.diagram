@@ -4,10 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="820e42a60d164d34ac72217e82339be2" Name="Diagram1">
-        <EntityTypeShape EntityType="LibraryModel.Author" Width="1.5" PointX="2.625" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibraryModel.Book" Width="1.5" PointX="7.625" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="LibraryModel.Category" Width="1.5" PointX="2.75" PointY="4" IsExpanded="true" />
+      <Diagram DiagramId="f62de6cdd4b84dfab9ce64c099b560fe" Name="Diagram1">
+        <EntityTypeShape EntityType="LibraryModel.Author" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibraryModel.Book" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibraryModel.Category" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="LibraryModel.MyBook" Width="1.5" PointX="2.75" PointY="4.75" IsExpanded="true" />
         <AssociationConnector Association="LibraryModel.FK__Books__AuthorId__3B75D760" ManuallyRouted="false" />
         <AssociationConnector Association="LibraryModel.FK__Books__CategoryI__3C69FB99" ManuallyRouted="false" />
       </Diagram>

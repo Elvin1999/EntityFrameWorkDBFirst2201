@@ -1,8 +1,11 @@
 ﻿using EntityDBFirst.Entities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,15 +24,24 @@ namespace EntityDBFirst
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window,INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
 
             //add
 
-           // Add();
+            Add();
 
 
             //Get();
@@ -41,30 +53,11 @@ namespace EntityDBFirst
 
 
             Get();
-
+            this.DataContext = this;
 
         }
-        public async Task<int> Remove()
-        {
-            using (var context = new LibraryEntities())
-            {
-
-                //remove
-                //var book = context.Books.FirstOrDefault(b => b.Id == 13);
-                //if (book != null)
-                //{
-                //    context.Books.Remove(book);
-                //    context.SaveChanges();
-                //}
-
-                var book = context.Books.FirstOrDefault(b => b.Id ==1);
-                context.Entry(book).State = EntityState.Deleted;
-                var result=await context.SaveChangesAsync();
-
-                return result;
-            }
-        }
-        public async void Add()
+       
+        public  void Add()
         {
             using (var context = new LibraryEntities())
             {
@@ -89,7 +82,7 @@ namespace EntityDBFirst
                 //};
 
                 //context.Entry(book).State = EntityState.Added;
-                //var result=await context.SaveChangesAsync();
+                //var result =  context.SaveChanges();
                 //MessageBox.Show($"{result} affected");
             }
         }
@@ -107,29 +100,60 @@ namespace EntityDBFirst
             }
         }
 
-        public async void Get()
+        public void Get()
         {
             using (var context = new LibraryEntities())
             {
 
-                var book = await context
-                    .Books
-                    .Include("Author") //Eager Loading  ,it brings navigation properties
-                    .Include("Category")
-                    .FirstOrDefaultAsync(b=>b.Id==3);
-                var list = new List<Book>();
-                list.Add(book);
-                mydatagrid.ItemsSource = list;
+                //var book = await context
+                //    .Books
+                //    .Include("Author") //Eager Loading  ,it brings navigation properties
+                //    .Include("Category")
+                //    .FirstOrDefaultAsync(b=>b.Id==3);
+                //var list = new List<Book>();
+                //list.Add(book);
+                //mydatagrid.ItemsSource = list;
 
-                //var books = context.Books.ToList();
-                //mydatagrid.ItemsSource = books;
+                //mydatagrid.ItemsSource = context.MyBooks.ToList();
+                //mydatagrid.ItemsSource = context.GetBookById(2).ToList();
+
+                var books = new ObservableCollection<Book>(context.Books.Include("Author").ToList());
+                AllBooks = books;
             }
         }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        public async void Remove()
         {
-            var result=await Remove();
-            Get();
+            using (var context = new LibraryEntities())
+            {
+
+                //remove
+                //var book = context.Books.FirstOrDefault(b => b.Id == 13);
+                //if (book != null)
+                //{
+                //    context.Books.Remove(book);
+                //    context.SaveChanges();
+                //}
+                Thread.Sleep(4000);
+                var book = context.Books.FirstOrDefault(b => b.Id == 17);
+                context.Entry(book).State = EntityState.Deleted;
+                var result = await context.SaveChangesAsync();
+                var books = new ObservableCollection<Book>(context.Books.Include("Author").ToList());
+                AllBooks = books;
+            }
+        }
+        private ObservableCollection<Book> allBooks;
+
+        public ObservableCollection<Book> AllBooks
+        {
+            get { return allBooks; }
+            set { allBooks = value; OnPropertyChanged(); }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Task task = new Task(Remove);
+            task.Start();
+            
         }
     }
 }
